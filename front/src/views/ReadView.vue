@@ -14,7 +14,7 @@ const props = defineProps({
 const router = useRouter();
 
 const moveToEdit = () => {
-  router.push({name: "edit"});
+  router.push({name: "edit", params: { postId: props.postId }});
 }
 
 const post = ref({

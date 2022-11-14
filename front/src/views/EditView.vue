@@ -1,36 +1,48 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {defineProps, ref} from "vue";
 import axios from "axios";
 import {useRouter} from "vue-router";
 
 const title = ref("")
 const content = ref("")
 
-const router = useRouter()
+const router = useRouter();
 
-const write = function () {
-  // console.log(title.value, content.value)
-  axios.post("/api/posts", {
-    title: title.value,
-    content: content.value,
-  })
-      .then(() => {
-        router.replace({name: "home"});
-      })
-};
+const post = ref({
+  id: 0,
+  title: "",
+  content: "",
+})
+
+const props = defineProps({
+  postId: {
+    type: [Number, String],
+    require: true,
+  },
+});
+
+axios.get(`/api/posts/${props.postId}`).then((response) => {
+  post.value = response.data;
+});
+
+const edit = () => {
+  axios.patch(`/api/posts/${props.postId}`, post.value).then(() => {
+    router.replace({name: "home"});
+  });
+}
 </script>
 
 <template>
   <div>
-    <el-input v-model="title" placeholder="제목을 입력해주세요"/>
+    <el-input v-model="post.title" />
   </div>
 
   <div class="mt-2">
-    <el-input v-model="content" type="textarea" rows="15"/>
+    <el-input v-model="post.content" type="textarea" rows="15"/>
   </div>
 
   <div class="mt-2">
-    <el-button type="primary" @click="write()">글 작성 완료</el-button>
+    <el-button type="waring" @click="edit()">수정 완료</el-button>
   </div>
 </template>
 
